@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "description": "Capstone project for modeling North Carolina cancer statistics.",
-  "repository": "https://github.com/angular/angular-seed",
+  "repository": "https://github.com/nrruby1/NCCancerStatsCapstone",
   "license": "MIT",
   "dependencies": {
     "angular": "^1.7.5",
