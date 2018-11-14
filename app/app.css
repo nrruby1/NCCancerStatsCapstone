@@ -1,0 +1,42 @@
+/* app css stylesheet */
+
+.menu {
+  list-style: none;
+  border-bottom: 0.1em solid black;
+  margin-bottom: 2em;
+  padding: 0 0 0.5em;
+}
+
+.menu:before {
+  content: "[";
+}
+
+.menu:after {
+  content: "]";
+}
+
+.menu > li {
+  display: inline;
+}
+
+.menu > li + li:before {
+  content: "|";
+  padding-right: 0.3em;
+}
+
+.main-tabs md-content {
+  background-color: transparent !important; 
+}
+
+.main-tabs md-content md-tabs {
+  background: #f6f6f6;
+  border: 1px solid #e1e1e1; 
+}
+
+.main-tabs md-content md-tabs md-tabs-wrapper {
+  background: white; 
+}
+
+.main-tabs md-content h1:first-child {
+  margin-top: 0; 
+}

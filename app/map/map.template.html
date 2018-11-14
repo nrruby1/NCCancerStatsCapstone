@@ -1,0 +1,106 @@
+<script src='https://api.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css' rel='stylesheet' />
+
+<style>
+    .map-overlay {
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+    border-radius: 3px;
+    position: absolute;
+    width: 25%;
+    top: 10px;
+    left: 10px;
+    padding: 10px;
+    display: none;
+    }
+</style>
+<div id='map-overlay' class='map-overlay'></div>
+<div id='map' style='width: 800px; height: 400px;'></div>
+    
+<script>
+    //MongoDB connection
+    const MongoClient = require('mongodb').MongoClient;
+    const assert = require('assert');
+
+    // Connection URL
+    const url = 'mongodb://McRae:Hotpepper1!@localhost:27017/Capstone?authSource=admin';
+
+    // Use connect method to connect to the Server
+    MongoClient.connect(url, function(err, client) {
+    assert.equal(null, err);
+    client.close();
+    });
+    const db = client.db("Capstone");
+    var num = db.collection('2010_cancer_by_county').find({ couny: "Wake" });
+</script>
+    
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1Ijoiam1tYXNzZXkyIiwiYSI6ImNqbnA1bzByaTAweTQzcG1iZmFzb3huanIifQ.XpnPcIFiUfJOwhkqA_UX2w';
+    var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/light-v9',
+    center: [-80, 35.2],
+    interactive: false,
+    minZoom: 5.9,
+    maxZoom: 5.9,
+    zoom: 5.9
+    });
+
+    // Create a popup
+    var popup = new mapboxgl.Popup({
+        closeButton: false
+    });
+    
+    map.on('load', function() {
+        // county polygons uploaded as vector tiles
+        map.addSource('counties', {
+            "type": "vector",
+            "url": "mapbox://jmmassey2.ajq1r4q2"
+        });
+    
+        map.addLayer({
+            "id": "counties",
+            "type": "fill",
+            "source": "counties",
+            "source-layer": "mygeodata-7hcym5",
+            "paint": {
+                "fill-outline-color": "rgba(0,0,0,0.1)",
+                "fill-color": "rgba(0,0,0,0.1)"
+            }
+        }, 'place-city-sm'); // Place polygon under these labels.
+        
+        map.addLayer({
+            "id": "counties-highlighted",
+            "type": "fill",
+            "source": "counties",
+            "source-layer": "mygeodata-7hcym5",
+            "paint": {
+                "fill-outline-color": "#484896",
+                "fill-color": "#6e599f",
+                "fill-opacity": 0.75
+            },
+            "filter": ["in", "NAME", ""]
+        }, 'place-city-sm'); // Place polygon under these labels.
+        
+        map.on('mousemove', 'counties', function(e) {
+            // Change the cursor style as a UI indicator.
+            map.getCanvas().style.cursor = 'pointer';
+    
+            // Single out the first found feature.
+            var feature = e.features[0];
+    
+            // Display a popup with the name of the county
+            popup.setLngLat(e.lngLat)
+                .setText(feature.properties.NAME + num)
+                .addTo(map);
+        });
+        
+        map.on('mouseleave', 'counties', function() {
+            map.getCanvas().style.cursor = '';
+            popup.remove();
+            map.setFilter('counties-highlighted', ['in', 'NAME', '']);
+            overlay.style.display = 'none';
+        });
+    });	
+</script>
